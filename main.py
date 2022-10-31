@@ -1,35 +1,42 @@
 import PySimpleGUI as sg
+
+# Import various files for the GUI
 from src import mainwindow as mainW
 from src import budgetwindow as budgetW
 from src import expenseswindow as expensesW
 from src import incomewindow as incomeW
 
-# TODO: Income Expenses
-#TODO: Budgeting
-#TODO: Categories (Food, Rent, etc)
-#TODO: Timeframe (Daily, Weekly, Monthly, Yearly)
+# global variables
+THEME: str = 'DarkAmber'
+sg.theme(THEME)
 
-
-window = sg.Window('Budgetti', mainW.LAYOUT)
-sg.theme('DarkAmber')
+def create_main_window():
+    main_layout = mainW.LAYOUT
+    return sg.Window('Budgetti', mainW.LAYOUT)
 
 def main():
+    # Define the window and theme
+    window: any = create_main_window()
     while True:
+        # read all actions and values from the window
         event, values = window.read()
+
+        # if the user closes the window or clicks the "Exit" button, exit the program
         if event in ["Exit", sg.WIN_CLOSED]:
             break
-        if event == 'Set Budget':
-            budgetW.open_window()
-        if event == 'Set Income':
-            print('Income Set')
-        if event == 'Set Expenses':
-            print('Expenses Set')
 
-        # Output a message to the window
-        print("Clear")
+        # if the user clicks the "Budgets" button, open the budget window
+        if event == 'Budgets':
+            budgetW.main()
+        if event == 'Set Income':
+            print('Income')
+        if event == 'Set Expenses':
+            print('Expenses')
 
     # Finish up by removing from the screen
     window.close()
 
+
 if __name__ == '__main__':
+    # run the programm
     main()
