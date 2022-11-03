@@ -1,8 +1,12 @@
 import PySimpleGUI as sg
 import json
 import random
-from data_handler import DataHandler
+import sys
 
+sys.path.append('../')
+import data_handler
+
+Data_Handler = data_handler.DataHandler()
 
 TIMEFRAMES: list[str] = ['All', 'Daily',
                          'Weekly', 'Monthly', 'Quarterly', 'Yearly']
@@ -23,8 +27,6 @@ def make_main_window():
          sg.Button('New Expense'), sg.Button('Exit')]
     ]
     return sg.Window('Budgeting', MAIN_BUDGET_LAYOUT, finalize=True)
-
-
 def make_new_budget_window():
     NEW_BUDGET_LAYOUT: list[list[any]] = [[sg.Text('Set Budget')],
                                           [sg.Text('Category'), sg.Combo(CATEGORIES, size=(20, 1), key="category_new"),
@@ -52,7 +54,7 @@ def open_window():
                 # create object for json dump from current data
                 current_budget_data: dict[str, dict[str, str | int]] = {values["budget_title_new"]: {"category": values["category_new"], "timeframe": values["timeframe_new"],
                                                                                                      "budget-amount": int(values["budget_amount_new"])}}
-                DataHandler.save_data(current_budget_data)
+                Data_Handler.save_data(current_budget_data)
             break
 
     window2.close()
@@ -62,16 +64,17 @@ def open_window():
 def main():
     window = make_main_window()
 
-    budget_data: dict[str, dict[str, str | int]] = DataHandler.load_data()
+    budget_data: dict[str, dict[str, str | int]] = Data_Handler.load_data()
 
     while True:
         event, values = window.read()
 
         if event == "Apply Filters":
-            display_data = DataHandler.format_data(
-                DataHandler.filter_data(values, budget_data))
+            display_data = Data_Handler.format_data(
+                Data_Handler.filter_data(values, budget_data))
 
             for i in range(len(display_data)):
+                # window["-OUTPUT-"]
                 window["-OUTPUT-"].print(display_data[i])
 
         if event in ["Exit", sg.WIN_CLOSED]:
