@@ -11,7 +11,6 @@ THEME: str = 'DarkAmber'
 sg.theme(THEME)
 
 def create_main_window():
-    main_layout = mainW.LAYOUT
     return sg.Window('Budgetti', mainW.LAYOUT)
 
 def main():
