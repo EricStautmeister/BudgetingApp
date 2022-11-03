@@ -6,6 +6,8 @@ import sys
 sys.path.append('../')
 import data_handler
 
+#random kommentar
+
 Data_Handler = data_handler.DataHandler()
 
 TIMEFRAMES: list[str] = ['All', 'Daily',
