@@ -3,8 +3,8 @@ import PySimpleGUI as sg
 # Import various files for the GUI
 from src import mainwindow as mainW
 from src import budgetwindow as budgetW
-from src import expenseswindow as expensesW
-from src import incomewindow as incomeW
+from src import expenses_income_window as expenses_income_W
+
 
 # global variables
 THEME: str = 'DarkAmber'
