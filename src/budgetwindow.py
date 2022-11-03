@@ -20,12 +20,15 @@ def make_main_window():
         [sg.Text('Timeframe:', size=(15, 1)), sg.Combo(
             TIMEFRAMES, size=(20, 4), readonly=True, key="timeframe"), sg.Text('Category:', size=(15, 1)), sg.Combo(
             CATEGORIES, size=(20, 4), readonly=True, key="category"), sg.Button('Apply Filters')],
-        [sg.Multiline('', key="-OUTPUT-", autoscroll=True, size=(50, 10), do_not_clear=False)],
+        [sg.Multiline('', key="-OUTPUT-", autoscroll=True,
+                      size=(50, 10), font=('Arial', 12), enable_events=True)],
         [sg.Text('', key="lower_bm_buffer")],
         [sg.Button('New Budget'), sg.Button('Manage income'),
          sg.Button('New Expense'), sg.Button('Exit')]
     ]
     return sg.Window('Budgeting', MAIN_BUDGET_LAYOUT, finalize=True)
+
+
 def make_new_budget_window():
     NEW_BUDGET_LAYOUT: list[list[any]] = [[sg.Text('Set Budget')],
                                           [sg.Text('Category'), sg.Combo(CATEGORIES, size=(20, 1), key="category_new"),
@@ -37,7 +40,7 @@ def make_new_budget_window():
                                           [sg.Button('Submit'),
                                            sg.Button('Cancel')]
                                           ]
-    return sg.Window('New Budget', NEW_BUDGET_LAYOUT, finalize=True)
+    return sg.Window('New Budget', NEW_BUDGET_LAYOUT, )
 
 
 def open_window():
@@ -61,17 +64,19 @@ def open_window():
 
 
 def main():
+    budget_data: dict[str, dict[str, str | int]] = Data_Handler.format_data(
+        Data_Handler.load_all_data())
     window = make_main_window()
-
-    budget_data: dict[str, dict[str, str | int]] = Data_Handler.load_data()
-
+    for i in range(len(budget_data)):
+        window["-OUTPUT-"].print(budget_data[i])
+    
     while True:
         event, values = window.read()
 
         if event == "Apply Filters":
             display_data = Data_Handler.format_data(
                 Data_Handler.filter_data(values, budget_data))
-            
+
             window["-OUTPUT-"].update("")
             for i in range(len(display_data)):
                 window["-OUTPUT-"].print(display_data[i])

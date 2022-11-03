@@ -41,6 +41,10 @@ class DataHandler():
                 json.dump({}, f)
             return {}
     
+    def load_all_data(self) -> dict[str, dict[str, str | int]]:
+        with open("budget_data.json", "r") as f:
+            return json.load(f)
+    
     def format_data(self, data: dict[str, dict[str, str | int]]) -> list[str]:
         return [f"Name: {key}\nCategory: {value['category']}\nTimeframe: {value['timeframe']}\nAmount: {value['budget-amount']}\n\n" for key, value in data.items()]
 
