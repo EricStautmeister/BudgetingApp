@@ -1,12 +1,9 @@
 import PySimpleGUI as sg
-import json
-import random
-import sys
 
-sys.path.append('../')
-import data_handler
-
-#random kommentar
+if __name__ == '__main__':
+    import data_handler
+else:
+    import src.data_handler as data_handler
 
 Data_Handler = data_handler.DataHandler()
 
@@ -23,7 +20,7 @@ def make_main_window():
         [sg.Text('Timeframe:', size=(15, 1)), sg.Combo(
             TIMEFRAMES, size=(20, 4), readonly=True, key="timeframe"), sg.Text('Category:', size=(15, 1)), sg.Combo(
             CATEGORIES, size=(20, 4), readonly=True, key="category"), sg.Button('Apply Filters')],
-        [sg.Multiline('', key="-OUTPUT-", autoscroll=True, size=(50, 10))],
+        [sg.Multiline('', key="-OUTPUT-", autoscroll=True, size=(50, 10), do_not_clear=False)],
         [sg.Text('', key="lower_bm_buffer")],
         [sg.Button('New Budget'), sg.Button('Manage income'),
          sg.Button('New Expense'), sg.Button('Exit')]
@@ -74,9 +71,9 @@ def main():
         if event == "Apply Filters":
             display_data = Data_Handler.format_data(
                 Data_Handler.filter_data(values, budget_data))
-
+            
+            window["-OUTPUT-"].update("")
             for i in range(len(display_data)):
-                # window["-OUTPUT-"]
                 window["-OUTPUT-"].print(display_data[i])
 
         if event in ["Exit", sg.WIN_CLOSED]:

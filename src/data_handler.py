@@ -1,5 +1,11 @@
 import json
+import sys
+import os
 
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# what does the above line do?
+# it adds the current directory to the path so that the module can be imported
 
 class DataHandler():
     def __init__(self):
