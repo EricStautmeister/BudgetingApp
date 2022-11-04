@@ -50,8 +50,7 @@ class DataHandler():
     def filter_data(self, values, dict: dict[str, dict[str, str | int]]):
         category, timeframe = values["category"].upper(
         ), values["timeframe"].upper()
-        filtered_dict = {}
-        print(category, timeframe)
+        filtered_dict = {}        
         if category == "ALL" and timeframe == "ALL":
             return dict
         if category == "" and timeframe == "":

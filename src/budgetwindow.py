@@ -86,27 +86,18 @@ def main():
     while True:
         event, values = window.read()
         print(event, values)
-
         if values["-BUDGET_LIST-"]:
             window["-OUTPUT-"].update("")
             for i in range(len(keyList)):
                 if values["-BUDGET_LIST-"][0] == keyList[i]:
                     window["-OUTPUT-"].print(formatted_data_list[i])
-
         if event == "Apply Filters":
             window["-OUTPUT-"].update("")
             filtered_key_list = Data_Handler.format_data(
                 Data_Handler.filter_data(values, rawData))["keyList"]
-            print(filtered_key_list)
             window["-BUDGET_LIST-"].update(filtered_key_list)
-
-            # window["-OUTPUT-"].update("")
-            # for i in range(len(display_data)):
-            #     window["-OUTPUT-"].print(display_data[i])
-
         if event in ["Exit", sg.WIN_CLOSED]:
             break
-
         if event in ["New Budget"]:
             open_window()
 
