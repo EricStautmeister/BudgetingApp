@@ -13,14 +13,15 @@ CATEGORIES: list[str] = ['All', 'Food', 'Rent', 'Utilities',
                          'Transportation', 'Entertainment', 'Other']
 
 
-def make_main_window():
+def make_main_window(budget_choises):
     MAIN_BUDGET_LAYOUT: list[list[any]] = [
         [sg.Text('Budgets', font=('Arial', 20))],
         [sg.Text('', key="upper_bm_buffer")],
         [sg.Text('Timeframe:', size=(15, 1)), sg.Combo(
             TIMEFRAMES, size=(20, 4), readonly=True, key="timeframe"), sg.Text('Category:', size=(15, 1)), sg.Combo(
             CATEGORIES, size=(20, 4), readonly=True, key="category"), sg.Button('Apply Filters')],
-        [sg.Multiline('', key="-OUTPUT-", autoscroll=True,
+        [sg.Listbox(budget_choises, size=(100, 20), key="-BUDGET_LIST-", enable_events=True),
+         sg.Multiline('', key="-OUTPUT-", autoscroll=True,
                       size=(50, 10), font=('Arial', 12), enable_events=True)],
         [sg.Text('', key="lower_bm_buffer")],
         [sg.Button('New Budget'), sg.Button('Manage income'),
@@ -43,6 +44,13 @@ def make_new_budget_window():
     return sg.Window('New Budget', NEW_BUDGET_LAYOUT, )
 
 
+def handle_numerical_input(input):
+    try:
+        return float(input)
+    except ValueError:
+        return None
+
+
 def open_window():
     window2 = make_new_budget_window()
     while True:
@@ -55,7 +63,7 @@ def open_window():
             with open("budget_data.json", "r") as f:
                 # create object for json dump from current data
                 current_budget_data: dict[str, dict[str, str | int]] = {values["budget_title_new"]: {"category": values["category_new"], "timeframe": values["timeframe_new"],
-                                                                                                     "budget-amount": int(values["budget_amount_new"])}}
+                                                                                                     "budget-amount": float(values["budget_amount_new"])}}
                 Data_Handler.save_data(current_budget_data)
             break
 
@@ -64,22 +72,37 @@ def open_window():
 
 
 def main():
-    budget_data: dict[str, dict[str, str | int]] = Data_Handler.format_data(
-        Data_Handler.load_all_data())
-    window = make_main_window()
-    for i in range(len(budget_data)):
-        window["-OUTPUT-"].print(budget_data[i])
-    
+    rawData = Data_Handler.load_data()
+    budgetData = Data_Handler.format_data(
+        Data_Handler.load_data())
+    keyList, formatted_data_list = budgetData["keyList"], budgetData["formatted_data_list"]
+    print(keyList)
+    window = make_main_window(keyList)
+    # for i in range(len(keyList)):
+    #     window["-OUTPUT-"].print(budget_data[i][0])
+    window["-OUTPUT-"].set_vscroll_position(0)
+    window["-BUDGET_LIST-"].set_vscroll_position(0)
+
     while True:
         event, values = window.read()
+        print(event, values)
+
+        if values["-BUDGET_LIST-"]:
+            window["-OUTPUT-"].update("")
+            for i in range(len(keyList)):
+                if values["-BUDGET_LIST-"][0] == keyList[i]:
+                    window["-OUTPUT-"].print(formatted_data_list[i])
 
         if event == "Apply Filters":
-            display_data = Data_Handler.format_data(
-                Data_Handler.filter_data(values, budget_data))
-
             window["-OUTPUT-"].update("")
-            for i in range(len(display_data)):
-                window["-OUTPUT-"].print(display_data[i])
+            filtered_key_list = Data_Handler.format_data(
+                Data_Handler.filter_data(values, rawData))["keyList"]
+            print(filtered_key_list)
+            window["-BUDGET_LIST-"].update(filtered_key_list)
+
+            # window["-OUTPUT-"].update("")
+            # for i in range(len(display_data)):
+            #     window["-OUTPUT-"].print(display_data[i])
 
         if event in ["Exit", sg.WIN_CLOSED]:
             break
