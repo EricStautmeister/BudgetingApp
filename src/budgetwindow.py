@@ -1,9 +1,11 @@
 import PySimpleGUI as sg
 
-if __name__ == '__main__':
+try:
     import data_handler
-else:
+    import expenses_income_window as expenses_income_W
+except Exception:
     import src.data_handler as data_handler
+    import src.expenses_income_window as expenses_income_W
 
 Data_Handler = data_handler.DataHandler()
 
@@ -24,8 +26,8 @@ def make_main_window(budget_choises):
          sg.Multiline('', key="-OUTPUT-", autoscroll=True,
                       size=(50, 10), font=('Arial', 12), enable_events=True)],
         [sg.Text('', key="lower_bm_buffer")],
-        [sg.Button('New Budget'), sg.Button('Manage income'),
-         sg.Button('New Expense'), sg.Button('Exit')]
+        [sg.Button('New Budget'), sg.Push(), sg.Button(
+            "Expenses and Income"), sg.Button('Exit')]
     ]
     return sg.Window('Budgeting', MAIN_BUDGET_LAYOUT, finalize=True)
 
@@ -44,7 +46,7 @@ def make_new_budget_window():
     return sg.Window('New Budget', NEW_BUDGET_LAYOUT, )
 
 
-def handle_numerical_input(input):
+def handle_float(input):
     try:
         return float(input)
     except ValueError:
@@ -62,8 +64,9 @@ def open_window():
         if event in ["Submit"]:
             with open("budget_data.json", "r") as f:
                 # create object for json dump from current data
+                budget_value = handle_float(values["budget_amount_new"])
                 current_budget_data: dict[str, dict[str, str | int]] = {values["budget_title_new"]: {"category": values["category_new"], "timeframe": values["timeframe_new"],
-                                                                                                     "budget-amount": float(values["budget_amount_new"])}}
+                                                                                                     "budget-amount": budget_value, "currently-left": budget_value, "expenses": {}}}
                 Data_Handler.save_data(current_budget_data)
             break
 
@@ -76,16 +79,12 @@ def main():
     budgetData = Data_Handler.format_data(
         Data_Handler.load_data())
     keyList, formatted_data_list = budgetData["keyList"], budgetData["formatted_data_list"]
-    print(keyList)
     window = make_main_window(keyList)
-    # for i in range(len(keyList)):
-    #     window["-OUTPUT-"].print(budget_data[i][0])
     window["-OUTPUT-"].set_vscroll_position(0)
     window["-BUDGET_LIST-"].set_vscroll_position(0)
 
     while True:
         event, values = window.read()
-        print(event, values)
         if values["-BUDGET_LIST-"]:
             window["-OUTPUT-"].update("")
             for i in range(len(keyList)):
@@ -100,6 +99,8 @@ def main():
             break
         if event in ["New Budget"]:
             open_window()
+        if event in ["Expenses and Income"]:
+            expenses_income_W.main()
 
     window.close()
     del (window)

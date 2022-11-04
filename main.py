@@ -1,7 +1,6 @@
 import PySimpleGUI as sg
 
 # Import various files for the GUI
-from src import mainwindow as mainW
 from src import budgetwindow as budgetW
 from src import expenses_income_window as expenses_income_W
 
@@ -10,8 +9,14 @@ from src import expenses_income_window as expenses_income_W
 THEME: str = 'DarkAmber'
 sg.theme(THEME)
 
+LAYOUT: list[list[any]] = [[sg.Push(), sg.Text('Budgetti'), sg.Push()],
+                           [sg.Button('Budgets'), sg.Button(
+                               'Expenses and Income')]]
+
+
 def create_main_window():
-    return sg.Window('Budgetti', mainW.LAYOUT)
+    return sg.Window('Budgetti', LAYOUT)
+
 
 def main():
     # Define the window and theme
@@ -27,13 +32,11 @@ def main():
         # if the user clicks the "Budgets" button, open the budget window
         if event == 'Budgets':
             budgetW.main()
-        if event == 'Set Income':
-            print('Income')
-        if event == 'Set Expenses':
-            print('Expenses')
+        if event == 'Expenses and Income':
+            expenses_income_W.main()
 
-    # Finish up by removing from the screen
     window.close()
+    del (window)
 
 
 if __name__ == '__main__':
