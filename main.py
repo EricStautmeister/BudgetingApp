@@ -11,7 +11,7 @@ sg.theme(THEME)
 
 def create_main_window():
     """
-    Erstellt das Hauptfenster
+    Das Hauptfenster wird definiert
     :return: Das Hauptfenster
     """
     LAYOUT: list[list[any]] = [[sg.Push(), sg.Text('Budgetti'), sg.Push()],
@@ -29,18 +29,22 @@ def main():
     window: any = create_main_window()
     while True:
         event, _ = window.read()
-        # Handhabt das Schließen des Fensters
+
         if event in ["Exit", sg.WIN_CLOSED]:
+            # Fenster wird geschlossen
             break
 
-        # Handhabt den Button "Budgets"
         if event == 'Budgets':
+            # Handhabt den Button "Budgets"
+            # Öffnet das Fenster für die Budgets
             budgetW.main()
 
-        # Handhabt den Button "Expenses and Income"
         if event == 'Expenses and Income':
+            # Handhabt den Button "Expenses and Income"
+            # Öffnet das Fenster für die Ausgaben und Einnahmen
             expenses_income_W.main()
 
+    # Cleanup
     window.close()
     del (window)
 
