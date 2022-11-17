@@ -176,6 +176,10 @@ def main():
     Das Budgetfenster wird geöffnet und gehandhabt.
     Darin werden alle Budgets angezeigt und können 
     angeklickt werden um die Budgetdetails zu sehen
+
+    TODO: Budgets können gelöscht werden
+    TODO: Budgets können bearbeitet werden
+    TODO: Budgets sollen resetted werden können
     """
 
     # Setup
