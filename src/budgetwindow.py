@@ -1,23 +1,30 @@
 import PySimpleGUI as sg
 
+# Behandelt ein Importproblem
 try:
     import data_handler
-    import expenses_income_window as expenses_income_W
+    # import expenses_income_window as expenses_income_W
 except Exception:
     import src.data_handler as data_handler
-    import src.expenses_income_window as expenses_income_W
+    # import src.expenses_income_window as expenses_income_W
 
-
+# Instanz der Klasse Data_Handler um mit den Daten zu arbeiten wird erstellt
 Data_Handler = data_handler.DataHandler()
 
+# die Kategorien und Zeitrahmen werden definiert
 TIMEFRAMES: list[str] = ['All', 'Daily',
                          'Weekly', 'Monthly', 'Quarterly', 'Yearly']
 CATEGORIES: list[str] = ['All', 'Food', 'Rent', 'Utilities',
                          'Transportation', 'Entertainment', 'Other']
 
 
-def make_main_window(budget_choises):
-    # das fenster mit den budget namen und daten wird erstellt
+def make_main_window(budget_choises: list[str]):
+    """
+    Das Budgetfenster wird definiert
+    
+    :param budget_choises: list[str] = []
+    :return: Das Budgetfenster
+    """
     MAIN_BUDGET_LAYOUT: list[list[any]] = [
         [sg.Text('Budgets', font=('Arial', 20)),
          sg.Button('Reset Budget Value')],
@@ -35,7 +42,12 @@ def make_main_window(budget_choises):
 
 
 def make_new_budget_window():
-    # das neue budget fenster wird erstellt
+    """
+    Das Fenster zum erstellen eines neuen Budgets wird definiert
+    Darin kann der Titel, die Katgorie, der Zeitrahmen und der Budgetwert festgelegt werden
+    :return: Ein Fenster zum erstellen eines neuen Budgets
+    """
+    
     NEW_BUDGET_LAYOUT: list[list[any]] = [[sg.Text('Set Budget')],
                                           [sg.Text('Category'), sg.Combo(CATEGORIES, size=(20, 1), key="category_new"),
                                            sg.Text('Timeframe'), sg.Combo(TIMEFRAMES, size=(20, 1), key="timeframe_new")],
@@ -49,25 +61,39 @@ def make_new_budget_window():
     return sg.Window('New Budget', NEW_BUDGET_LAYOUT, )
 
 
-def handle_float(input):
-    # um input fehler zu vermeiden, wird der input in eine float gecasted
+def handle_float(input: str) -> float | None:
+    """
+    Die Eingabe wird in eine float gecastet und zurückgegeben,
+    wenn das nicht möglich ist wird None zurückgegeben
+    
+    :param input: str: Input der in eine float gecastet werden soll
+    :return: float oder None
+    """
     try:
         return float(input)
     except ValueError:
         return None
 
 
-def open_window():
+def new_budgets():
+    """
+    Das Fenster zum erstellen neuer Budgets wird geöffnet und gehandhabt. 
+    """
+    # Setup
     window2 = make_new_budget_window()
+
     while True:
         Data_Handler.load_data()
         event, values = window2.read()
 
         if event in ["Cancel", sg.WIN_CLOSED]:
+            # Wenn das Fenster geschlossen wird, stoppt das Fenster
             break
 
         if event in ["Submit"]:
-            # create object for json dump from current data
+            # Wenn der Submit Button gedrückt wird, wird das Budget erstellt
+            # Die Eingaben werden überprüft und das Budget erstellt und gespeichert
+            # Dann wird das Fenster geschlossen
             budget_value = handle_float(values["budget_amount_new"])
             current_budget_data: dict[str, dict[str, str | int]] = {values["budget_title_new"]: {"type": "b", "category": values["category_new"], "timeframe": values["timeframe_new"],
                                                                                                  "budget-amount": budget_value, "currently-left": budget_value, "expenses": {}}}
@@ -79,7 +105,10 @@ def open_window():
 
 
 def make_update_window():
-    # das update budget fenster wird erstellt
+    """
+    Das Fenster zum updaten der Budgets wird definiert
+    :return: Ein Fenster zum updaten der Budgets
+    """
     UPDATE_BUDGET_LAYOUT: list[list[any]] = [[sg.Text('Update Budget')],
                                              [sg.Text('Timeframe'), sg.Combo(
                                                  TIMEFRAMES, size=(20, 1), key="timeframe_update")],
@@ -94,18 +123,29 @@ def make_update_window():
 
 
 def update_window(win):
-    # das update fenster wird geöffnet
+    """
+    Das Fenster zum updaten der Budgets wird geöffnet und gehandhabt.
+    Darin kann der Zeitrahmen ausgewählt werden, der upgedatet werden soll
+    Wird ein Zeitraum ausgewählt, werden alle Budgets mit diesem Zeitraum upgedatet
+    Wird alle Zeitrahmen ausgewählt, werden alle Budgets upgedatet
+
+    :param win: Das Budgetfenster
+    """
+    # Setup
     window2 = make_update_window()
+
     while True:
         Data_Handler.load_data()
         event, values = window2.read()
 
         if event in ["Cancel", sg.WIN_CLOSED]:
+            # Wenn das Fenster geschlossen wird, stoppt das Fenster
             window2.close()
             del (window2)
 
         if event in ["Update selected Timeframe only"]:
-            # reset all budgets in selected timeframe
+            # Wenn der Update selected Timeframe only Button gedrückt wird, 
+            # werden alle Budgets mit dem ausgewählten Zeitraum upgedatet
             try:
                 Data_Handler.reset_budgets(values["timeframe_update"][0])
                 Data_Handler.save_data(None)
@@ -120,7 +160,8 @@ def update_window(win):
                 continue
 
         if event in ["RESET ALL BUDGETS"]:
-            # reset all budgets
+            # Wenn der RESET ALL BUDGETS Button gedrückt wird,
+            # werden alle Budgets upgedatet
             Data_Handler.reset_all_budgets()
             Data_Handler.save_data(None)
             window2.close()
@@ -131,10 +172,15 @@ def update_window(win):
 
 
 def main():
-    Data_Handler.load_data()
-    keys = Data_Handler.format_data()
+    """
+    Das Budgetfenster wird geöffnet und gehandhabt.
+    Darin werden alle Budgets angezeigt und können 
+    angeklickt werden um die Budgetdetails zu sehen
+    """
 
     # Setup
+    Data_Handler.load_data()
+    keys = Data_Handler.format_data()
     window = make_main_window(keys)
 
     # Configs
@@ -144,6 +190,10 @@ def main():
     while True:
         event, values = window.read()
         if values != None and values.get("-BUDGET_LIST-") != None:
+            # Wenn ein Budget ausgewählt wird,
+            # werden die Budgetdetails angezeigt
+            # Die Budgetdetails werden aus der Data_Handler Klasse geholt
+            # und in das Fenster geschrieben
             window["-OUTPUT-"].update("")
             Data_Handler.format_data()
             keyList = Data_Handler.formatted_data["keyList"]
@@ -156,8 +206,11 @@ def main():
                         Data_Handler.formatted_data["formatted_meta"][i])
 
         if event == "Apply Filters":
-            # alle daten werden gefiltert, dann werden die keys in eine liste geschrieben
-            # und die daten in die Infoliste  geschrieben
+            # Wenn der Apply Filters Button gedrückt wird,
+            # werden die Budgets gefiltert
+            # Die Filter werden aus dem Fenster geholt
+            # und an die Data_Handler Klasse weitergegeben
+            # Die Budgets werden gefiltert, neu formatiert und angezeigt
             window["-OUTPUT-"].update("")
             Data_Handler.load_data()
             Data_Handler.filter_data(values)
@@ -166,18 +219,18 @@ def main():
                 Data_Handler.formatted_data["keyList"])
 
         if event == "Reset Budget Value":
+            # Wenn der Reset Budget Value Button gedrückt wird,
+            # wird das Fenster zum updaten der Budgets geöffnet
             update_window(window)
         if event in ["Exit", sg.WIN_CLOSED]:
-            # das programm wird beendet
+            # Wenn das Fenster geschlossen wird, stoppt das Fenster
             break
         if event in ["New Budget"]:
-            # das neue budget fenster wird geöffnet
-            open_window()
-        # if event in ["Expenses and Income"]:
-            # das expenses and income fenster wird geöffnet
-            # expenses_income_W.main()
+            # Wenn der New Budget Button gedrückt wird,
+            # wird das Fenster zum erstellen eines neuen Budgets geöffnet
+            new_budgets()
 
-    # schließt das fenster und speichert die daten ab
+    # Cleanup
     window.close()
     Data_Handler.save_data(None)
     del (window)
