@@ -5,8 +5,20 @@ from src import data_handler
 
 
 # global variables
-THEME: str = 'DarkAmber'
+sg.LOOK_AND_FEEL_TABLE['CustomTheme'] = {'BACKGROUND': '#FFFFFF',
+                                            'TEXT': '#5B86E5',
+                                            'INPUT': '#DDDDDD',
+                                            'TEXT_INPUT': '#5B86E5',
+                                            'SCROLL': '#99CC99',
+                                            'BUTTON': ('#5B86E5', '#FFFFFF'),
+                                            'PROGRESS': ('#D1826B', '#CC8019'),
+                                            'BORDER': 1, 'SLIDER_DEPTH': 0,
+                                            'PROGRESS_DEPTH': 0, }
+font = ('Helvetica', 10, "bold")
+THEME: str = 'CustomTheme'
 sg.theme(THEME)
+sg.set_options(font=font)
+colors = ("white", sg.theme_background_color())
 
 
 def create_main_window():
@@ -14,9 +26,9 @@ def create_main_window():
     Das Hauptfenster wird definiert
     :return: Das Hauptfenster
     """
-    LAYOUT: list[list[any]] = [[sg.Push(), sg.Text('Budgetti'), sg.Push()],
-                               [sg.Button('Budgets'), sg.Button(
-                                   'Expenses and Income')]]
+    LAYOUT: list[list[any]] = [[sg.Push(), sg.Text('Budgetti', font=("Helvetica", 12, "bold")), sg.Push()],
+                               [sg.Button('Budgets', button_color=colors, image_filename="./Budgets.png", border_width=0),
+                               sg.Button('Expenses\nand\nIncome', button_color=colors, image_filename="./EI.png", border_width=0)]]
 
     return sg.Window('Budgetti', LAYOUT)
 
@@ -39,7 +51,7 @@ def main():
             # Öffnet das Fenster für die Budgets
             budgetW.main()
 
-        if event == 'Expenses and Income':
+        if event == 'Expenses\nand\nIncome':
             # Handhabt den Button "Expenses and Income"
             # Öffnet das Fenster für die Ausgaben und Einnahmen
             expenses_income_W.main()
