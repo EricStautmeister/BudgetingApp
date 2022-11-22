@@ -35,7 +35,7 @@ class DataHandler():
         self.formatted_data = {}
 
     # FILE HANDLER METHODS
-    def save_data(self, data: dict[str, dict[str, str | int]]) -> None:
+    def save_data(self, data: dict[str, dict[str, str | int]], mode=0) -> None:
         """
         Diese Funktion speichert die Daten in die Datei budget_data.json
         Dabei gibt es zwei Modi:
@@ -48,8 +48,11 @@ class DataHandler():
         :param data: dict[str, dict[str, str | int]]
         :type data: dict[str, dict[str, str | int]]
         """
-        if data is None:
+        if data is None and mode == 0:
             self.load_data()
+            with open("budget_data.json", "w") as f:
+                json.dump(self.rawdata, f)
+        elif data is None and mode == 1:
             with open("budget_data.json", "w") as f:
                 json.dump(self.rawdata, f)
         else:
@@ -111,7 +114,7 @@ class DataHandler():
                               value in self.filtered_data.items() if value['type'] == "b"]
             # eine Liste der Transaktionsnamen für die GUI
             formatted_meta.extend(
-                [f"" for key, value in self.filtered_data.items() if value["type"] in ["i", "e"]])
+                [f"{key}: " for key, value in self.filtered_data.items() if value["type"] in ["i", "e"]])
             self.formatted_data = {"keyList": keyList,
                                    "formatted_meta": formatted_meta}
             return keyList
@@ -171,12 +174,10 @@ class DataHandler():
         :param timeframe: str: Der Zeitraum, für den die Budgets zurückgesetzt werden sollen
         :type timeframe: str
         """
-        for _, budget in self.rawdata.items():
-            if budget["type"] == "b":
-                print(f"\n\n\n{budget}\n\n\n")
-                if budget["timeframe"] == timeframe:
-                    self.rawdata[budget]["currently-left"] = self.rawdata[budget]["budget-amount"]
-                    self.rawdata[budget]["expenses"] = {}
+        for budgetName, budgetBody in self.rawdata.items():
+            if budgetBody["type"] == "b" and budgetBody["timeframe"] == timeframe:
+                self.rawdata[budgetName]["currently-left"] = self.rawdata[budgetName]["budget-amount"]
+                self.rawdata[budgetName]["expenses"] = {}
 
     def reset_all_budgets(self) -> None:
         """
@@ -213,17 +214,16 @@ class DataHandler():
         """
         self.rawdata[budget_name]["currently-left"] -= amount
 
-    def remove_budget(self, budget_name: str) -> None:
+    def delete_budget(self, budget_name: str) -> None:
         """
         Diese Funktion entfernt ein Budget aus den Daten.
-
-        Diese Funktion ist nicht in Gebrauch,
-        sie ist nur für das Konzept gedacht,
-        und könnte in Zukunft verwendet werden.
 
         :param budget_name: Der Name des Budgets, das entfernt werden soll
         :type budget_name: str
         """
+        expenses: str = self.rawdata[budget_name]["expenses"]
+        for expense in expenses:
+            self.rawdata["expenses"].pop(expense)
         self.rawdata.pop(budget_name)
 
     def get_expenses_by_budget(self, budget_name: str) -> dict[str, dict[str, str | int]]:

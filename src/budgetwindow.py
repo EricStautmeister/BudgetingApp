@@ -21,22 +21,22 @@ CATEGORIES: list[str] = ['All', 'Food', 'Rent', 'Utilities',
 def make_main_window(budget_choises: list[str]):
     """
     Das Budgetfenster wird definiert
-    
+
     :param budget_choises: list[str] = []
     :return: Das Budgetfenster
     """
     MAIN_BUDGET_LAYOUT: list[list[any]] = [
         [sg.Text('Budgets', font=('Arial', 20)),
-         sg.Button('Reset Budget Value')],
+         sg.Button('Reset Budget Value'), sg.Push(), sg.Button('New Budget'), sg.Button('Delete Budget')],
         [sg.Text('', key="upper_bm_buffer")],
         [sg.Text('Timeframe:', size=(15, 1)), sg.Combo(
-            TIMEFRAMES, size=(20, 4), readonly=True, key="timeframe"), sg.Text('Category:', size=(15, 1)), sg.Combo(
-            CATEGORIES, size=(20, 4), readonly=True, key="category"), sg.Button('Apply Filters')],
+            TIMEFRAMES, size=(20, 8), readonly=True, key="timeframe"), sg.Text('Category:', size=(15, 1)), sg.Combo(
+            CATEGORIES, size=(20, 8), readonly=True, key="category"), sg.Button('Apply Filters')],
         [sg.Listbox(budget_choises, size=(30, 20), key="-BUDGET_LIST-", enable_events=True),
          sg.Multiline('', key="-OUTPUT-", autoscroll=True,
                       size=(50, 10), font=('Arial', 12), enable_events=True)],
         [sg.Text('', key="lower_bm_buffer")],
-        [sg.Button('New Budget'), sg.Push(), sg.Button('Exit')]
+        [sg.Push(), sg.Button('Exit')]
     ]
     return sg.Window('Budgeting', MAIN_BUDGET_LAYOUT, finalize=True)
 
@@ -47,7 +47,7 @@ def make_new_budget_window():
     Darin kann der Titel, die Katgorie, der Zeitrahmen und der Budgetwert festgelegt werden
     :return: Ein Fenster zum erstellen eines neuen Budgets
     """
-    
+
     NEW_BUDGET_LAYOUT: list[list[any]] = [[sg.Text('Set Budget')],
                                           [sg.Text('Category'), sg.Combo(CATEGORIES, size=(20, 1), key="category_new"),
                                            sg.Text('Timeframe'), sg.Combo(TIMEFRAMES, size=(20, 1), key="timeframe_new")],
@@ -65,7 +65,7 @@ def handle_float(input: str) -> float | None:
     """
     Die Eingabe wird in eine float gecastet und zurückgegeben,
     wenn das nicht möglich ist wird None zurückgegeben
-    
+
     :param input: str: Input der in eine float gecastet werden soll
     :return: float oder None
     """
@@ -144,16 +144,13 @@ def update_window(win):
             del (window2)
 
         if event in ["Update selected Timeframe only"]:
-            # Wenn der Update selected Timeframe only Button gedrückt wird, 
+            # Wenn der Update selected Timeframe only Button gedrückt wird,
             # werden alle Budgets mit dem ausgewählten Zeitraum upgedatet
             try:
-                Data_Handler.reset_budgets(values["timeframe_update"][0])
-                Data_Handler.save_data(None)
+                Data_Handler.reset_budgets(values["timeframe_update"])
+                Data_Handler.save_data(None, mode=1)
                 window2.close()
-                del (window2)
-                win.close()
-                del (win)
-
+                del(window2)
                 break
             except IndexError:
                 sg.popup("Please select a timeframe")
@@ -165,10 +162,68 @@ def update_window(win):
             Data_Handler.reset_all_budgets()
             Data_Handler.save_data(None)
             window2.close()
-            del (window2)
-            win.close()
-            del (win)
+            del(window2)
             break
+
+
+def delete_budget():
+    """
+    Das Fenster zum löschen eines Budgets wird geöffnet und gehandhabt.
+    """
+    # Setup
+    layout = [[sg.Text('Delete Budget')],
+              [sg.Text('Enter Budget Title:'),
+               sg.DropDown(Data_Handler.formatted_data["keyList"], size=(20, 1), key="budget_title_delete")],
+              [sg.Button('Submit'),
+               sg.Button('Cancel')]
+              ]
+    window2 = sg.Window('Delete Budget', layout, )
+
+    while True:
+        Data_Handler.load_data()
+        event, values = window2.read()
+
+        def warning_popup():
+            """
+            Ein Popup wird geöffnet, wenn kein Budget ausgewählt ist
+            """
+            sg.popup("You have not picked a budget", title="Warning", keep_on_top=True)
+
+        if event in ["Cancel", sg.WIN_CLOSED]:
+            # Wenn das Fenster geschlossen wird, stoppt das Fenster
+            break
+
+        if event in ["Submit"]:
+            # Wenn der Submit Button gedrückt wird, wird das Budget gelöscht
+            # Wenn das Budget nicht existiert, wird eine Fehlermeldung angezeigt
+            try:
+                if values["budget_title_delete"] == "": 
+                    warning_popup()
+                    continue
+                Data_Handler.delete_budget(values["budget_title_delete"])
+                Data_Handler.save_data(None, mode=1)
+                Data_Handler.format_data()
+                break
+            except KeyError:
+                sg.popup("Budget does not exist")
+                continue
+
+    window2.close()
+    del (window2)
+
+
+def reload_budgets(window, values):
+    # Wenn der Apply Filters Button gedrückt wird,
+    # werden die Budgets gefiltert
+    # Die Filter werden aus dem Fenster geholt
+    # und an die Data_Handler Klasse weitergegeben
+    # Die Budgets werden gefiltert, neu formatiert und angezeigt
+    window["-OUTPUT-"].update("")
+    Data_Handler.load_data()
+    Data_Handler.filter_data(values)
+    Data_Handler.format_data()
+    window["-BUDGET_LIST-"].update(
+        Data_Handler.formatted_data["keyList"])
 
 
 def main():
@@ -205,34 +260,36 @@ def main():
                 if len(values["-BUDGET_LIST-"]) == 0:
                     break
                 if keyList[i] == values["-BUDGET_LIST-"][0]:
-                    print(Data_Handler.formatted_data)
                     window["-OUTPUT-"].update(
                         Data_Handler.formatted_data["formatted_meta"][i])
 
         if event == "Apply Filters":
             # Wenn der Apply Filters Button gedrückt wird,
-            # werden die Budgets gefiltert
-            # Die Filter werden aus dem Fenster geholt
-            # und an die Data_Handler Klasse weitergegeben
-            # Die Budgets werden gefiltert, neu formatiert und angezeigt
-            window["-OUTPUT-"].update("")
-            Data_Handler.load_data()
-            Data_Handler.filter_data(values)
-            Data_Handler.format_data()
-            window["-BUDGET_LIST-"].update(
-                Data_Handler.formatted_data["keyList"])
+            # werden die Budgets gefiltert und wieder angezeigt
+            reload_budgets(window, values)
 
         if event == "Reset Budget Value":
             # Wenn der Reset Budget Value Button gedrückt wird,
             # wird das Fenster zum updaten der Budgets geöffnet
             update_window(window)
+            reload_budgets(window, values)
+
         if event in ["Exit", sg.WIN_CLOSED]:
             # Wenn das Fenster geschlossen wird, stoppt das Fenster
             break
+
         if event in ["New Budget"]:
             # Wenn der New Budget Button gedrückt wird,
             # wird das Fenster zum erstellen eines neuen Budgets geöffnet
             new_budgets()
+            reload_budgets(window, values)
+
+        if event in ["Delete Budget"]:
+            # Wenn der Delete Budget Button gedrückt wird,
+            # wird das Fenster zum löschen eines Budgets geöffnet
+            delete_budget()
+            reload_budgets(window, values)
+
 
     # Cleanup
     window.close()

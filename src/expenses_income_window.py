@@ -107,6 +107,32 @@ def new_expense_or_income():
     del (window2)
 
 
+def delete_expense_or_income():
+    """
+    Die ausgewählte Ausgabe oder Einnahme wird aus der Datenbank gelöscht.
+    """
+    LAYOUT = [
+        [sg.Text("Delete Expense or Income")],
+        [sg.Text("Mode")],
+        [sg.Listbox(["Expense", "Income"], size=(40, 10), key="delete")],
+        [sg.Button("Submit"), sg.Button("Cancel")]
+    ]
+    window2 = sg.Window("Delete Expense or Income", LAYOUT, finalize=True)
+    while True:
+        event, values = window2.read()
+
+        # Die ausgewählten Werte werden geholt
+        if values["mode"] == "Expense":
+            Data_Handler.delete_expense(values["-expenses-"][0])
+        elif values["mode"] == "Income":
+            Data_Handler.delete_income(values["-income-"][0])
+        else:
+            sg.popup("No mode selected")
+        # Die Daten werden geladen
+        Data_Handler.save_data()
+        Data_Handler.format_data()
+
+
 def main():
     """
     Das Ausgaben und Einnahmen Fenster wird geöffnet und die Daten werden geladen.
@@ -142,7 +168,14 @@ def main():
             break
         if event == "New Expense or Income":
             # Das Fenster für neue Ausgaben und Einnahmen wird geöffnet
-            new_expense_or_income()
+            if Data_Handler.formatted_data["keyList"] == []:
+                sg.popup("No budgets created yet, go create one!")
+                
+            else:
+                new_expense_or_income()
+        if event == "Delete Expenses and Income":
+            delete_expense_or_income(values["-mode-"][0], values)
+            
         if values["-expenses-"]:
             # Funktioniert noch nicht (raise NotImplementedError)
             sg.popup(values["-expenses-"][0])
