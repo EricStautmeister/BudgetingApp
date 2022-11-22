@@ -28,7 +28,7 @@ def create_main_window():
     """
     LAYOUT: list[list[any]] = [[sg.Push(), sg.Text('Budgetti', font=("Helvetica", 12, "bold")), sg.Push()],
                                [sg.Button('Budgets', button_color=colors, image_filename="./Budgets.png", border_width=0),
-                               sg.Button('Expenses\nand\nIncome', button_color=colors, image_filename="./EI.png", border_width=0)]]
+                               sg.Button('Expenses\n& Income', button_color=colors, image_filename="./EI.png", border_width=0)]]
 
     return sg.Window('Budgetti', LAYOUT)
 
@@ -51,7 +51,7 @@ def main():
             # Öffnet das Fenster für die Budgets
             budgetW.main()
 
-        if event == 'Expenses\nand\nIncome':
+        if event == 'Expenses\n& Income':
             # Handhabt den Button "Expenses and Income"
             # Öffnet das Fenster für die Ausgaben und Einnahmen
             expenses_income_W.main()
