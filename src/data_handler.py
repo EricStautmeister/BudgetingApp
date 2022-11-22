@@ -17,6 +17,10 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 # allow importing the src folder
 sys.path.append(os.path.dirname(__file__))
 
+JSON_DATA_TEMPLATE: dict[str, dict[str, str | int]] = {
+    "expenses": {"type": "e"},
+    "income": {"type": "i"},
+}
 
 class DataHandler():
     def __init__(self):
@@ -73,8 +77,10 @@ class DataHandler():
             return self.rawdata
         except FileNotFoundError as e:
             with open("budget_data.json", "w") as f:
-                json.dump({}, f)
-            return {}
+                json.dump(JSON_DATA_TEMPLATE, f)
+            self.rawdata = JSON_DATA_TEMPLATE
+            self.filtered_data = self.rawdata
+            return self.rawdata
 
     def load_all_data(self) -> dict[str, dict[str, str | int]]:
         """
