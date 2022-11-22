@@ -11,7 +11,7 @@ The app is written in python, and the documentation in german, as this app was c
 Language: Python 3.10+ <br />
 Packages: PySimpleGUI <br />
 
-![Update Python to 3.10+](https://www.python.org/downloads/)
+[Update Python to 3.10+](https://www.python.org/downloads/)
 
 ```
 git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
