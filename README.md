@@ -14,8 +14,8 @@ Packages: PySimpleGUI <br />
 
 ```
 git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
-pip install pysimplegui
 cd Budgetti
+pip install pysimplegui
 ./main.py
 ```
 
