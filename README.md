@@ -11,13 +11,15 @@ The app is written in python, and the documentation in german, as this app was c
 Language: Python 3.10+ ([Update Python to 3.10+](https://www.python.org/downloads/))<br /> 
 Packages: PySimpleGUI <br />
 
-
+#### Windows
 ```
 git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
 cd Budgetti
 pip install pysimplegui
 ./main.py
 ```
+<br />
+Or download the zip file and install pysimplegui manually. 
 
 License
 ![GPL-License](https://img.shields.io/github/license/Shabinder/SpotiFlyer?style=flat-square)
