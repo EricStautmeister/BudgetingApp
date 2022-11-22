@@ -7,16 +7,17 @@ The app is written in python, and the documentation in german, as this app was c
 
 ## Installation Instructions
 ---
-###### Recource requirements
+##### Recource requirements
 Language: Python 3.10+ <br />
-Packages: <br />
-- PySimpleGUI
+Packages: PySimpleGUI <br />
 
-
+![Update Python to 3.10+](https://www.python.org/downloads/)
 
 ```
 git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
 pip install pysimplegui
+cd Budgetti
+./main.py
 ```
 
 License

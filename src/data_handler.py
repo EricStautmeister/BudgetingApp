@@ -17,7 +17,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 # allow importing the src folder
 sys.path.append(os.path.dirname(__file__))
 
-JSON_DATA_TEMPLATE: dict[str, dict[str, str | int]] = {
+JSON_DATA_TEMPLATE = {
     "expenses": {"type": "e"},
     "income": {"type": "i"},
 }
