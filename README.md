@@ -7,18 +7,20 @@ The app is written in python, and the documentation in german, as this app was c
 
 ## Installation Instructions
 ---
-##### Recource requirements
+#### Recource requirements
+
+Required for Installation: [Git](https://git-scm.com/downloads) <br />
+Or skip to [manual installation](### Manual Installation)
 Language: Python 3.10+
 
-*Check with:*
+*Check with ([Update Python to 3.10+](https://www.python.org/downloads/)):*
 ```
 python --version # windows
 python --verson # unix/macOS
 ```
-([Update Python to 3.10+](https://www.python.org/downloads/))<br /> 
+<br /> 
 Packages: PySimpleGUI <br />
 
-Required for Installation: [Git](https://git-scm.com/downloads) <br />
 #### Windows
 ```
 git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
@@ -36,6 +38,7 @@ python3 -m pip install pysimplegui
 python3 main.py
 ```
 <br />
+### Manual Installation
 Or download the zip file and install pysimplegui manually. 
 
 License
