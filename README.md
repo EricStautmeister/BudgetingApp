@@ -6,8 +6,8 @@ This is an application providing budgeting functionality and a GUI around the Da
 The app is written in python, and the documentation in german, as this app was created in the scope of an academic project.  
 
 ## Installation Instructions
----
-### Recource requirements
+
+### Recource requirements:
 
 Required for Installation: [Git](https://git-scm.com/downloads) <br />
 Or skip to [manual installation](#manual-installation)
@@ -39,7 +39,7 @@ python3 -m pip install --upgrade pip setuptools wheel
 python3 -m pip install pysimplegui
 python3 main.py
 ```
-<br />
+
 ## Manual Installation
 Download the zip file, extract all and run the main file.
 Check the python version running the file and if python is at the require 
