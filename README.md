@@ -24,7 +24,7 @@ git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
 cd Budgetti
 py -m pip install --upgrade pip setuptools wheel
 py -m pip install pysimplegui
-main.py
+py main.py
 ```
 #### Unix/macOS
 ```
@@ -32,7 +32,7 @@ git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
 cd Budgetti
 python3 -m pip install --upgrade pip setuptools wheel
 python3 -m pip install pysimplegui
-main.py
+python3 main.py
 ```
 <br />
 Or download the zip file and install pysimplegui manually. 
