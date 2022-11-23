@@ -18,6 +18,7 @@ python --verson # unix/macOS
 ([Update Python to 3.10+](https://www.python.org/downloads/))<br /> 
 Packages: PySimpleGUI <br />
 
+Required for Installation: [Git](https://git-scm.com/downloads) <br />
 #### Windows
 ```
 git clone https://github.com/EricStautmeister/BudgetingApp.git Budgetti
